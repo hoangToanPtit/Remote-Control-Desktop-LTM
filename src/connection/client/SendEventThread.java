@@ -49,6 +49,14 @@ public class SendEventThread implements KeyListener, MouseMotionListener, MouseL
     }
 
     public void mouseDragged(MouseEvent e) {
+        writer.println(Commands.EVENT_MOUSE.getAbbrev());
+        writer.println(e.getButton());
+        double xScale = (double) w / (cPanel.getWidth());
+        double yScale = (double) h / (cPanel.getHeight());
+        writer.println((int) (e.getX() * xScale));
+        writer.println((int) (e.getY() * yScale));
+        writer.println(e.getButton());
+        writer.flush();
     }
 
     public void mouseMoved(MouseEvent e) {
