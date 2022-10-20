@@ -4,6 +4,8 @@
  */
 package gui.component;
 
+import connection.server.ListenThread;
+import connection.server.ServerSide;
 import gui.common.CommonLabel;
 import gui.common.CommonPanel;
 import gui.common.CommonStatic;
@@ -25,6 +27,8 @@ import javax.swing.event.PopupMenuListener;
  */
 public class ServerPanel extends JPanel {
 
+    private ListenThread listen_thread = null;
+    
     private CommonPanel main_panel;
     private JLabel status_label;
     private CommonLabel listen_label;
@@ -74,7 +78,6 @@ public class ServerPanel extends JPanel {
             public void popupMenuCanceled(PopupMenuEvent e) {
             }
 
-            
             // get ip addreses
             private List<String> getAllIpv4AddressesOnLocal() throws SocketException {
                 List<String> ipv4_addresses = new ArrayList<>();
@@ -93,10 +96,10 @@ public class ServerPanel extends JPanel {
                 }
                 return ipv4_addresses;
             }
-            
+
         });
         this.main_panel.getHostCombo().setVisible(true);
-        
+
         // style status_label
         this.status_label.setText("Status: Stopped");
         this.status_label.setBounds(30, 200, 150, 20);
@@ -112,7 +115,7 @@ public class ServerPanel extends JPanel {
         this.listen_label.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                //listenLabelMousePressed(e);
+                listenLabelMousePressed(e);
             }
         });
         this.add(this.listen_label);
@@ -126,11 +129,58 @@ public class ServerPanel extends JPanel {
         this.stop_label.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                //stopLabelMousePressed(e);
+                stopLabelMousePressed(e);
             }
         });
         this.add(this.stop_label);
 
     }
 
+    // handle events of listen_label
+    private void listenLabelMousePressed(MouseEvent e) {
+        if (e.getButton() == MouseEvent.BUTTON1 && this.listen_label.isEnabled()) {
+            try {
+                // get ip, port, password
+                String host = this.main_panel.getHostCombo().getSelectedItem().toString().trim();
+                int port = Integer.parseInt(this.main_panel.getPortText().getText().trim());
+                String password = this.main_panel.getPassText().getText().trim();
+
+                // start listen_thread
+                this.listen_thread = new ListenThread(new ServerSide(port, password));
+
+                // set status
+                this.main_panel.setEnabled(false);
+                this.listen_label.resetFont();
+                this.listen_label.setEnabled(false);
+                this.stop_label.setEnabled(true);
+                this.status_label.setText("Status: Listening...");
+                this.status_label.setForeground(Color.decode(CommonStatic.FOREGROUND));
+            } catch (Exception exception) {
+                JOptionPane.showMessageDialog(this, "Can't start listening on server:\n" + exception.getMessage());
+            }
+        }
+    }
+
+    // handle events of stop_label
+    private void stopLabelMousePressed(MouseEvent e) {
+        if(e.getButton() == MouseEvent.BUTTON1 && this.stop_label.isEnabled()) {
+            try {
+
+                // stop listen_thread
+                this.listen_thread.terminal();
+
+                // TODO: set status
+                this.main_panel.setEnabled(true);
+                this.stop_label.resetFont();
+                this.stop_label.setEnabled(false);
+                this.listen_label.setEnabled(true);
+                this.status_label.setText("Status: Stopped");
+                this.status_label.setForeground(Color.decode(CommonStatic.FOREGROUND));
+            }
+            catch(Exception exception) {
+                System.out.println(exception.getMessage());
+                JOptionPane.showMessageDialog(this, "Can't stop listening on server:\n" + exception.getMessage());
+            }
+        }
+    }
 }
