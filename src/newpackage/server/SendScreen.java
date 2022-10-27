@@ -1,8 +1,5 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
-package connection.server;
+package newpackage.server;
+
 
 import java.awt.Rectangle;
 import java.awt.Robot;
@@ -12,25 +9,22 @@ import java.io.OutputStream;
 import java.net.Socket;
 import javax.imageio.ImageIO;
 
-/**
- *
- * @author Nguyen Van Toan
- */
-public class SendScreenThread extends Thread{
-    private Socket socket = null;
-    private Robot robot = null;
-    private Rectangle rectangle = null;
-    private boolean continueLoop = true;
-    private OutputStream oos = null;
+class SendScreen extends Thread {
 
-    public SendScreenThread(Socket socket, Robot robot, Rectangle rectangle) {
+    Socket socket = null;
+    Robot robot = null;
+    Rectangle rectangle = null;
+    boolean continueLoop = true;
+
+    OutputStream oos = null;
+
+    public SendScreen(Socket socket, Robot robot, Rectangle rect) {
         this.socket = socket;
         this.robot = robot;
-        this.rectangle = rectangle;
+        rectangle = rect;
         start();
     }
-    
-    @Override
+
     public void run() {
 
         try {
@@ -50,17 +44,10 @@ public class SendScreenThread extends Thread{
             }
 
             try {
-                Thread.sleep(5);
+                Thread.sleep(10);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            
-//            continueLoop=false;
         }
     }
-    
-    public void terminate() {
-        continueLoop = false;
-    }
-    
 }

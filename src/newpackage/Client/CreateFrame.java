@@ -1,4 +1,4 @@
-package connection.client;
+package newpackage.Client;
 
 import java.awt.BorderLayout;
 import java.beans.PropertyVetoException;
@@ -11,19 +11,20 @@ import javax.swing.JPanel;
 import java.util.zip.*;
 
 import java.io.IOException;
+import javax.swing.WindowConstants;
 
-class FrameCreator extends Thread {
+class CreateFrame extends Thread {
 
     String width = "", height = "";
-    private JFrame frame = new JFrame();
 
     //JDesktopPane represents the main container that will contain all connected clients' screens
     private JDesktopPane desktop = new JDesktopPane();
     private Socket cSocket = null;
     private JInternalFrame interFrame = new JInternalFrame("Server Screen", true, true, true);
     private JPanel cPanel = new JPanel();
+    private JFrame frame = new JFrame();
 
-    public FrameCreator(Socket cSocket, String width, String height) {
+    public CreateFrame(Socket cSocket, String width, String height) {
 
         this.width = width;
         this.height = height;
@@ -35,13 +36,14 @@ class FrameCreator extends Thread {
     public void drawGUI() {
         frame.add(desktop, BorderLayout.CENTER);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
         //Show thr frame in maximized state
+
         frame.setExtendedState(frame.getExtendedState() | JFrame.MAXIMIZED_BOTH);		//CHECK THIS LINE
         frame.setVisible(true);
         interFrame.setLayout(new BorderLayout());
         interFrame.getContentPane().add(cPanel, BorderLayout.CENTER);
         interFrame.setSize(400, 200);
+
         desktop.add(interFrame);
 
         try {
@@ -70,8 +72,9 @@ class FrameCreator extends Thread {
         }
 
         //Start receiving screenshots
-        new ReceiveScreenThread(in, cPanel);
+        new ReceiveScreen(in, cPanel);
         //Start sending events to the client
-        new SendEventThread(cSocket, cPanel, width, height);
+        new SendEvents(cSocket, cPanel, width, height);
     }
+
 }

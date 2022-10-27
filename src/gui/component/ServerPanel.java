@@ -147,6 +147,7 @@ public class ServerPanel extends JPanel {
 
                 // start listen_thread
                 this.listen_thread = new ListenThread(new ServerSide(port, password));
+//                this.listen_thread = new ListenThread(new ServerSide(port, password));
 
                 // set status
                 this.main_panel.setEnabled(false);
